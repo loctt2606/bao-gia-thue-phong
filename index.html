@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Báo Giá Phí Thuê Phòng</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 50%, #fdf4ff 100%);
+      min-height: 100vh;
+      padding: 28px 16px 48px;
+      color: #3b1f5e;
+    }
+
+    .wrapper { max-width: 680px; margin: 0 auto; }
+
+    /* ===== HEADER ===== */
+    .app-header { text-align: center; margin-bottom: 32px; }
+    .app-header .logo { font-size: 3rem; margin-bottom: 10px; }
+    .app-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #7c3aed;
+      letter-spacing: 0.3px;
+    }
+    .app-header p { color: #9333ea; font-size: 0.93rem; margin-top: 5px; }
+
+    /* ===== CARD ===== */
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 6px 32px rgba(124, 58, 237, 0.12);
+      padding: 28px 32px;
+      margin-bottom: 22px;
+    }
+
+    .card-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #7c3aed;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 18px;
+      background: #7c3aed;
+      border-radius: 4px;
+    }
+
+    /* ===== FORM ===== */
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .form-group:last-of-type { margin-bottom: 0; }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #4b2d7e;
+    }
+
+    input[type="text"], input[type="number"] {
+      padding: 10px 14px;
+      border: 1.5px solid #e9d5ff;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: #3b1f5e;
+      background: #faf5ff;
+      outline: none;
+      width: 100%;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+      background: #fff;
+    }
+
+    /* Giá 0.5h badge */
+    .gia-buoi-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+      border: 1.5px solid #ddd6fe;
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-top: 4px;
+    }
+    .gia-buoi-label { font-size: 0.83rem; color: #6d28d9; font-weight: 600; }
+    .gia-buoi-value {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #7c3aed;
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1.5px dashed #e9d5ff;
+      margin: 20px 0;
+    }
+
+    /* ===== BUỔI DẠY GRID ===== */
+    .buoi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 480px) { .buoi-grid { grid-template-columns: 1fr; } }
+
+    .buoi-item { display: flex; flex-direction: column; gap: 5px; }
+
+    .buoi-item label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #4b2d7e;
+    }
+
+    .buoi-item .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .buoi-item input { padding-right: 50px !important; }
+    .unit {
+      position: absolute;
+      right: 12px;
+      font-size: 0.77rem;
+      color: #7c3aed;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    /* ===== BUTTON ===== */
+    .btn {
+      padding: 11px 26px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: background .2s, transform .1s, box-shadow .2s;
+    }
+    .btn:active { transform: scale(.97); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      color: #fff;
+      box-shadow: 0 3px 12px rgba(124, 58, 237, 0.35);
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #6d28d9, #7c3aed); }
+
+    .btn-outline {
+      background: transparent;
+      color: #7c3aed;
+      border: 1.5px solid #7c3aed;
+    }
+    .btn-outline:hover { background: #f5f3ff; }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff;
+      box-shadow: 0 3px 12px rgba(5, 150, 105, 0.3);
+    }
+    .btn-success:hover { background: linear-gradient(135deg, #047857, #059669); }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== KẾT QUẢ ===== */
+    #result-section { display: none; }
+
+    .result-card {
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      border-radius: 18px;
+      padding: 28px 32px;
+      color: #fff;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+    }
+
+    .result-card-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .result-tong {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .result-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.88rem;
+    }
+    .result-row-label { opacity: 0.9; }
+    .result-row-value { font-weight: 700; }
+    .result-row.zero { opacity: 0.45; }
+
+    .result-meta {
+      margin-top: 14px;
+      font-size: 0.78rem;
+      opacity: 0.65;
+    }
+
+    /* ===== FOOTER ===== */
+    .app-footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #a78bfa;
+      margin-top: 8px;
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      body { background: white; padding: 0; }
+      .no-print { display: none !important; }
+      .card { box-shadow: none; border: 1px solid #ddd; }
+      .result-card {
+        background: #f5f3ff !important;
+        color: #3b1f5e !important;
+        box-shadow: none;
+        border: 1px solid #ddd;
+      }
+      .result-card-title, .result-tong { color: #7c3aed !important; }
+      .result-row { background: #ede9fe !important; color: #3b1f5e !important; }
+      #result-section { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="app-header">
+    <div class="logo">🏫</div>
+    <h1>Báo Giá Phí Thuê Phòng</h1>
+    <p>Tính toán chi phí thuê phòng theo số buổi dạy</p>
+  </div>
+
+  <!-- Card nhập liệu -->
+  <div class="card">
+    <div class="card-title">Thiết Lập Giá Phòng</div>
+
+    <!-- Giá phòng -->
+    <div class="form-group">
+      <label for="giaPhong">💵 Giá phòng (VNĐ / ngày)</label>
+      <input
+        type="text"
+        id="giaPhong"
+        placeholder="Ví dụ: 800.000"
+        inputmode="numeric"
+        autocomplete="off"
+      />
+    </div>
+
+    <!-- Giá 1 buổi 0.5h (tự động) -->
+    <div class="gia-buoi-box">
+      <span class="gia-buoi-label">⚡ Giá 1 buổi 0.5 giờ = (Giá phòng ÷ 8) ÷ 3</span>
+      <span class="gia-buoi-value" id="giaBuoiHienThi">—</span>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="card-title" style="margin-bottom:16px">Số lượng buổi dạy</div>
+
+    <!-- 4 ô buổi -->
+    <div class="buoi-grid">
+      <div class="buoi-item">
+        <label for="buoi15">📘 Buổi dạy 1.5 giờ</label>
+        <div class="input-wrapper">
+          <input type="number" id="buoi15" value="8" min="0" placeholder="0" />
+          <span class="unit">buổi</span>
+        </div>
+      </div>
+
+      <div class="buoi-item">
+        <label for="buoi2">📗 Buổi dạy 2 giờ</label>
+        <div class="input-wrapper">
+          <input type="number" id="buoi2" value="0" min="0" placeholder="0" />
+          <span class="unit">buổi</span>
+        </div>
+      </div>
+
+      <div class="buoi-item">
+        <label for="buoi25">📙 Buổi dạy 2.5 giờ</label>
+        <div class="input-wrapper">
+          <input type="number" id="buoi25" value="0" min="0" placeholder="0" />
+          <span class="unit">buổi</span>
+        </div>
+      </div>
+
+      <div class="buoi-item">
+        <label for="buoi3">📕 Buổi dạy 3 giờ</label>
+        <div class="input-wrapper">
+          <input type="number" id="buoi3" value="0" min="0" placeholder="0" />
+          <span class="unit">buổi</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row no-print">
+      <button class="btn btn-primary" onclick="tinhGia()">⚡ Tính Báo Giá</button>
+      <button class="btn btn-outline" onclick="lamLai()">🔄 Xóa hết</button>
+    </div>
+  </div>
+
+  <!-- Kết quả -->
+  <div id="result-section">
+    <div class="result-card">
+      <div class="result-card-title">💰 Tổng Phí Thuê Phòng</div>
+      <div class="result-tong" id="res-tong">—</div>
+      <div class="result-breakdown" id="res-breakdown"></div>
+      <div class="result-meta" id="res-meta"></div>
+    </div>
+
+    <div class="card" style="padding:18px 24px">
+      <div class="btn-row no-print" style="margin-top:0">
+        <button class="btn btn-success" onclick="window.print()">🖨️ In Báo Giá</button>
+        <button class="btn btn-outline" onclick="xuatHTML()">💾 Lưu HTML</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-footer">Báo giá phí thuê phòng</div>
+</div>
+
+<script>
+  // ===== HELPERS =====
+  function fmt(so) {
+    return so.toLocaleString('vi-VN') + ' ₫';
+  }
+
+  function fmtInput(val) {
+    const raw = val.replace(/\D/g, '');
+    return raw ? parseInt(raw, 10).toLocaleString('vi-VN') : '';
+  }
+
+  function layGiaPhong() {
+    const raw = document.getElementById('giaPhong').value.replace(/\D/g, '');
+    return raw ? parseInt(raw, 10) : NaN;
+  }
+
+  function layInt(id) {
+    return parseInt(document.getElementById(id).value, 10) || 0;
+  }
+
+  // ===== FORMAT GIÁ PHÒNG REALTIME =====
+  document.getElementById('giaPhong').addEventListener('input', function () {
+    const pos    = this.selectionStart;
+    const oldLen = this.value.length;
+    this.value   = fmtInput(this.value);
+    const newLen = this.value.length;
+    this.setSelectionRange(pos + (newLen - oldLen), pos + (newLen - oldLen));
+    capNhatGiaBuoi();
+  });
+
+  document.getElementById('giaPhong').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') tinhGia();
+  });
+
+  // ===== CẬP NHẬT GIÁ BUỔI 0.5H =====
+  function capNhatGiaBuoi() {
+    const gia = layGiaPhong();
+    const el  = document.getElementById('giaBuoiHienThi');
+    el.textContent = isNaN(gia) || gia <= 0 ? '—' : fmt(Math.round((gia / 8)/3));
+  }
+
+  // ===== TÍNH BÁO GIÁ =====
+  function tinhGia() {
+    const giaPhong = layGiaPhong();
+
+    if (isNaN(giaPhong) || giaPhong <= 0) {
+      alert('Vui lòng nhập giá phòng hợp lệ.');
+      document.getElementById('giaPhong').focus();
+      return;
+    }
+
+    const giaBuoi = Math.round(giaPhong / 8 / 3);   // giá 1 buổi 0.5h
+
+    const sl15  = layInt('buoi15');
+    const sl2   = layInt('buoi2');
+    const sl25  = layInt('buoi25');
+    const sl3   = layInt('buoi3');
+
+    if (sl15 + sl2 + sl25 + sl3 === 0) {
+      alert('Vui lòng nhập ít nhất 1 buổi dạy.');
+      return;
+    }
+
+    // Tính tiền từng loại
+    const tien15  = giaBuoi * sl15  * 3;
+    const tien2   = giaBuoi * sl2   * 4;
+    const tien25  = giaBuoi * sl25  * 5;
+    const tien3   = giaBuoi * sl3   * 6;
+    const tongTien = tien15 + tien2 + tien25 + tien3;
+
+    // --- Tổng ---
+    document.getElementById('res-tong').textContent = fmt(tongTien);
+
+    // --- Chi tiết từng loại ---
+    const breakdown = document.getElementById('res-breakdown');
+    breakdown.innerHTML = '';
+
+    const items = [
+      { label: `Buổi 1,5 giờ × ${sl15} buổi  (× 3 đơn vị)`, tien: tien15, sl: sl15 },
+      { label: `Buổi 2 giờ × ${sl2} buổi  (× 4 đơn vị)`,    tien: tien2,  sl: sl2  },
+      { label: `Buổi 2,5 giờ × ${sl25} buổi  (× 5 đơn vị)`, tien: tien25, sl: sl25 },
+      { label: `Buổi 3 giờ × ${sl3} buổi  (× 6 đơn vị)`,    tien: tien3,  sl: sl3  },
+    ];
+
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'result-row' + (item.sl === 0 ? ' zero' : '');
+      row.innerHTML = `
+        <span class="result-row-label">${item.label}</span>
+        <span class="result-row-value">${fmt(item.tien)}</span>
+      `;
+      breakdown.appendChild(row);
+    });
+
+    // --- Meta ---
+    const now = new Date();
+    document.getElementById('res-meta').textContent =
+      `Giá phòng: ${fmt(giaPhong)}  ·  Giá 0,5h: ${fmt(giaBuoi)}  ·  Ngày: ${now.toLocaleDateString('vi-VN')}`;
+
+    // --- Hiện section ---
+    const section = document.getElementById('result-section');
+    section.style.display = 'block';
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ===== LÀM LẠI =====
+  function lamLai() {
+    document.getElementById('giaPhong').value = '';
+    document.getElementById('giaBuoiHienThi').textContent = '—';
+    document.getElementById('buoi15').value = '8';
+    document.getElementById('buoi2').value  = '0';
+    document.getElementById('buoi25').value = '0';
+    document.getElementById('buoi3').value  = '0';
+    document.getElementById('result-section').style.display = 'none';
+  }
+
+  // ===== XUẤT HTML =====
+  function xuatHTML() {
+    const giaPhong = layGiaPhong();
+    if (isNaN(giaPhong) || giaPhong <= 0) {
+      alert('Vui lòng tính báo giá trước khi xuất.');
+      return;
+    }
+
+    const giaBuoi  = Math.round(giaPhong / 8 / 3);
+    const sl15     = layInt('buoi15');
+    const sl2      = layInt('buoi2');
+    const sl25     = layInt('buoi25');
+    const sl3      = layInt('buoi3');
+    const tien15   = giaBuoi * sl15  * 3;
+    const tien2    = giaBuoi * sl2   * 4;
+    const tien25   = giaBuoi * sl25  * 5;
+    const tien3    = giaBuoi * sl3   * 6;
+    const tongTien = tien15 + tien2 + tien25 + tien3;
+    const now      = new Date();
+
+    const rows = [
+      [`Buổi 1,5 giờ × ${sl15} buổi (× 3 đơn vị)`, tien15,  sl15],
+      [`Buổi 2 giờ × ${sl2} buổi (× 4 đơn vị)`,    tien2,   sl2 ],
+      [`Buổi 2,5 giờ × ${sl25} buổi (× 5 đơn vị)`, tien25,  sl25],
+      [`Buổi 3 giờ × ${sl3} buổi (× 6 đơn vị)`,    tien3,   sl3 ],
+    ].map(([label, tien, sl]) => `
+      <tr style="opacity:${sl===0?'0.4':'1'}">
+        <td style="padding:10px 14px;border-bottom:1px solid #ede9fe">${label}</td>
+        <td style="padding:10px 14px;text-align:right;font-weight:700;color:#7c3aed;border-bottom:1px solid #ede9fe">${tien.toLocaleString('vi-VN')} ₫</td>
+      </tr>`).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Báo Giá Phí Thuê Phòng</title>
+</head>
+<body style="font-family:'Segoe UI',sans-serif;background:#fdf4ff;padding:32px;color:#3b1f5e">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 4px 24px rgba(124,58,237,.15);padding:28px">
+    <h2 style="text-align:center;color:#7c3aed;margin-bottom:4px">🏫 Báo Giá Phí Thuê Phòng</h2>
+    <p style="text-align:center;color:#9333ea;font-size:.85rem;margin-bottom:6px">
+      Giá phòng: ${giaPhong.toLocaleString('vi-VN')} ₫ &nbsp;·&nbsp; Giá 0,5h: ${giaBuoi.toLocaleString('vi-VN')} ₫
+    </p>
+    <p style="text-align:center;color:#64748b;font-size:.8rem;margin-bottom:20px">Ngày: ${now.toLocaleDateString('vi-VN')}</p>
+    <table style="width:100%;border-collapse:collapse;font-size:.92rem">
+      <thead>
+        <tr style="background:linear-gradient(135deg,#7c3aed,#9333ea);color:#fff">
+          <th style="padding:11px 14px;text-align:left">Loại Buổi</th>
+          <th style="padding:11px 14px;text-align:right">Thành Tiền</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;background:#f5f3ff;border-radius:10px;padding:14px 18px">
+      <span style="font-weight:700;font-size:.9rem;color:#4b2d7e">💰 TỔNG CỘNG</span>
+      <span style="font-weight:800;font-size:1.3rem;color:#7c3aed">${tongTien.toLocaleString('vi-VN')} ₫</span>
+    </div>
+    <p style="text-align:center;color:#a78bfa;font-size:.75rem;margin-top:16px">Dự Án 16 · Báo giá phí thuê phòng</p>
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `bao-gia-thue-phong-${now.getDate()}-${now.getMonth()+1}-${now.getFullYear()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
